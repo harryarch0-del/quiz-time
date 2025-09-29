@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Duck Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --card-radius:20px;
+      --accent-1:#ff7a59;
+      --accent-2:#ffd86b;
+      --btn-grad: linear-gradient(135deg,var(--accent-2),var(--accent-1));
+      --soft-shadow: 0 18px 40px rgba(14,30,37,0.12);
+    }
+
+    html,body{height:100%;margin:0;}
+
+    /* FULLSCREEN CENTERING */
+    body{
+      display:grid;
+      place-items:center; /* perfect centering both axes */
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(120deg,#ffe6d5 0%, #ffd8a8 25%, #c7ebff 60%, #e6f3ff 100%);
+      background-attachment: fixed;
+      overflow:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* wrapper keeps card centered and provides breathing room */
+    .wrapper{
+      width:100%;
+      max-width:520px;
+      padding:24px;
+      box-sizing:border-box;
+      z-index:2; /* above background ducks */
+    }
+
+    .card{
+      background: rgba(255,255,255,0.98);
+      border-radius:var(--card-radius);
+      box-shadow: var(--soft-shadow);
+      padding:28px 22px;
+      text-align:center;
+      width:100%;
+    }
+
+    h1{margin:0 0 8px 0;font-size:28px;color:#ff6b6b;font-weight:700;}
+    p.lead{margin:0 0 16px 0;color:#334155;font-size:16px}
+
+    .options{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+
+    .opt-btn{
+      border:0;outline:0;padding:14px 18px;border-radius:12px;font-weight:600;font-size:16px;cursor:pointer;
+      background:var(--btn-grad);color:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.08);transition:transform .15s,box-shadow .15s;
+      width:100%;
+    }
+    .opt-btn:active{transform:translateY(1px)}
+    .opt-btn[disabled]{opacity:0.85;cursor:default}
+
+    .result{display:none;margin-top:14px;font-weight:700;color:#10b981}
+    .next-btn{display:none;margin-top:12px;padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(135deg,#60a5fa,#3b82f6);color:#fff;font-weight:700;cursor:pointer}
+
+    /* Duck background layer — fixed and won't affect centering */
+    .duck-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .duck{position:absolute;width:56px;height:56px;opacity:0.18;will-change:transform;transform-origin:center;animation:float linear infinite}
+
+    @keyframes float{from{transform:translateY(110vh) rotate(0deg)} to{transform:translateY(-110vh) rotate(360deg)}}
+
+    /* Confetti canvas on top of card so confetti visible */
+    #confetti-canvas{position:fixed;inset:0;z-index:3;pointer-events:none}
+
+    /* responsive tweaks */
+    @media (max-width:420px){
+      .wrapper{padding:16px}
+      h1{font-size:22px}
+      .opt-btn{padding:12px;font-size:15px;border-radius:10px}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="duck-bg" id="duck-bg" aria-hidden="true"></div>
+
+  <div class="wrapper">
+    <section class="card" role="main" aria-labelledby="title">
+      <h1 id="title">Good Morning Quiz 🌞</h1>
+      <p class="lead" id="question">Loading question...</p>
+
+      <div class="options" id="options"></div>
+
+      <p id="result" class="result">✅ Correct! You're the best</p>
+      <button id="nextBtn" class="next-btn" onclick="nextQuestion()">Next Question ➡️</button>
+    </section>
+  </div>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    // QUESTIONS (every option considered "correct" for the playful quiz)
+    const questions = [
+      { q: "Who is the best dancer 💃?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
+      { q: "Who is a best cook 👩‍🍳?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
+      { q: "Who is the cutest foodie 😋?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
+      { q: "Who has a good back and hot 🥵 ?", options: ["You","BaoBao😘","Janet","Bubbles💙"] }
+    ];
+
+    let current = 0;
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const resultEl = document.getElementById('result');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function loadQuestion(){
+      const q = questions[current];
+      questionEl.textContent = q.q;
+      optionsEl.innerHTML = '';
+      resultEl.style.display = 'none';
+      nextBtn.style.display = 'none';
+
+      q.options.forEach((opt, i) =>{
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.textContent = opt;
+        btn.onclick = () => onAnswer(btn);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function onAnswer(btn){
+      // disable all buttons to avoid spamming
+      Array.from(optionsEl.querySelectorAll('button')).forEach(b=>b.disabled=true);
+      resultEl.style.display = 'block';
+      nextBtn.style.display = 'inline-block';
+
+      // short confetti burst
+      confetti({ particleCount: 220, spread: 80, origin: { y: 0.6 } });
+    }
+
+    function nextQuestion(){
+      current++;
+      if(current < questions.length){ loadQuestion(); }
+      else{
+        questionEl.textContent = "You're so cute; Do you know English 😘?🎉 Have a Nice Day, I'm so proud of you.";
+        optionsEl.innerHTML = '';
+        resultEl.style.display = 'none';
+        nextBtn.style.display = 'none';
+      }
+    }
+
+    // create floating duck images (replace 'duck.png' with your image file in the repo root)
+    const duckContainer = document.getElementById('duck-bg');
+    const D = 9; // number of ducks
+    for(let i=0;i<D;i++){
+      const d = document.createElement('img');
+      d.className = 'duck';
+      d.alt = '';
+      d.src = 'duck.png';
+
+      // spread ducks across the screen but they won't affect centering
+      const left = Math.random()*100; // vw
+      const startTop = Math.random()*120; // start off-screen sometimes
+      d.style.left = `calc(${left}vw - 28px)`;
+      d.style.top = `${startTop}vh`;
+      d.style.animationDuration = `${10 + Math.random()*14}s`;
+      d.style.opacity = 0.12 + Math.random()*0.18;
+      d.style.transform = `translateZ(0) rotate(${Math.random()*360}deg)`;
+
+      duckContainer.appendChild(d);
+    }
+
+    // ensure confetti canvas is full screen and above the ducks
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', ()=>{
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // initial load
+    loadQuestion();
+  </script>
+
+</body>
+</html>
