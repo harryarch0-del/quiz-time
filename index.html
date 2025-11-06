@@ -102,14 +102,14 @@
     // QUESTIONS (every option considered "correct" for the playful quiz)
     const questions = [
       { q: "Who is the best dancer 💃?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
-      { q: "Who is the cutest foodie 😋?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
+      { q: "Who is the smartest cookie in the whole uni 🍪?”, options: ["You","BaoBao😘","Janet","Bubbles💙"] },
       { q: "Who has a good back and is hot 🥵 ?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
-      { q: "Who is the best cook 👩‍🍳?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
+      { q: "Who has the main character in this semester’s success story 🌟?”, options: ["You","BaoBao😘","Janet","Bubbles💙"] },
       { q: "Who has the best fashion sense 👗 ?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
       { q: "Who is a good cook as well👩‍🍳?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
       { q: "Who has a soothing voice and is the best singer🔥?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
-      { q: "Who takes a lot of food pics and teases their starving friends 😂?", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
-      { q: "Who has the most beautiful soul 🌸?", options: ["You","BaoBao😘","Janet","Bubbles💙"] }
+      { q: "Who is the best? YOU. Always YOU.”", options: ["You","BaoBao😘","Janet","Bubbles💙"] },
+      { q: "Who’s the one I believe in even when they doubt themselves — the one who deserves every good thing coming their way 🌷✨?” , options: ["You","BaoBao😘","Janet","Bubbles💙"] }
     ];
 
     let current = 0;
@@ -148,7 +148,7 @@
       current++;
       if(current < questions.length){ loadQuestion(); }
       else{
-        questionEl.textContent = "You're so cute; Do you know English 😘?🎉 Have a Nice Day, I'm so proud of you.";
+        questionEl.textContent = "Be the reason sun 🌞 look down and say,‘that one’s got a light of her own ✨💖’? Good Morning Chinky🐼, I'm so proud of you.";
         optionsEl.innerHTML = '';
         resultEl.style.display = 'none';
         nextBtn.style.display = 'none';
@@ -193,4 +193,5 @@
 </body>
 
 </html>
+
 
